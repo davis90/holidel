@@ -1,4 +1,4 @@
-import {PaginationValues, PaginationResult} from '../interfaces/request'
+import {PaginationResult} from '../interfaces/request'
 
 export const paginationService = {
     // Formater la réponse paginée

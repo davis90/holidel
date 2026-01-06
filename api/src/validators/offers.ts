@@ -1,5 +1,6 @@
 import {query} from 'express-validator'
 import {paginationValidations} from './paginations'
+import {parse} from 'path'
 
 /**
  * Validations pour les filtres des offres
@@ -60,4 +61,9 @@ export const getOffersValidations = [
     .isInt({min: 0})
     .toInt()
     .withMessage('averageConsultationsDayMax doit être un nombre positif')
+  , query('departments')
+    .optional()
+    .custom((arr) => Array.isArray(arr) ? arr.every((num: string) => parseInt(num) > 0) : parseInt(arr) > 0)
+    .customSanitizer((arr) => Array.isArray(arr) ? arr.map((num: string) => parseInt(num)) : [parseInt(arr)])
+    .withMessage('Chaque département doit être un nombre entier positif')
 ]

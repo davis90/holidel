@@ -1,4 +1,4 @@
-import {FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Equal, Between, FindOptionsWhereProperty} from 'typeorm'
+import {FindOptionsWhere, LessThanOrEqual, MoreThanOrEqual, Between, ArrayOverlap} from 'typeorm'
 
 export const FilterService = {
 
@@ -31,6 +31,14 @@ export const FilterService = {
     ): FindOptionsWhere<T> {
         if (value == undefined) return {}
         return {[paramName]: value} as FindOptionsWhere<T>
+    },
+
+    formatArrayContains<T, V>(
+        paramName: string,
+        values?: V[]
+    ): FindOptionsWhere<T> {
+        if (values == undefined) return {}
+        return {[paramName]: ArrayOverlap(values)} as FindOptionsWhere<T>
     }
 }
 

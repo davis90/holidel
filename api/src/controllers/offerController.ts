@@ -16,7 +16,15 @@ export async function getOffers(
     const [offers, total] = await repo.findAndCount({
         skip: offset,
         take: limit,
-        where: reqFilters
+        where: reqFilters,
+        select: {
+            nurse: {
+                authorizedDepartment: true
+            }
+        },
+        relations: {
+            nurse: true
+        }
     })
 
     return paginationService.formatResponse(offers, total, page, limit)
