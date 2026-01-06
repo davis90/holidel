@@ -8,7 +8,6 @@ import {FilterService} from '../services/FilterService'
 import {paginationService} from '../services/paginationService'
 import {handleValidationErrors} from '../middlewares/validationMiddleware'
 import {getOffersValidations} from '../validators/offers'
-import {matchedData} from 'express-validator'
 
 const router = Router()
 
@@ -19,28 +18,31 @@ router.get(
     handleValidationErrors,
     async (req: OfferRequest, res: Response) => {
         try {
-            const {limit, page} = paginationService.getPaginationParams(req.query.page, req.query.limit)
-
             // Build filters object from query parameters
             const filters: FindOptionsWhere<Offer>[] = []
 
-            filters.push(FilterService.formatStrictFilter<Offer>('nurseId', data.nurseId))
+            filters.push(FilterService.formatStrictFilter<Offer>('nurseId', req.query.nurseId))
             filters.push(FilterService.formatNumberMinMaxFilter<Offer>(
-                'nbDaysMin', 'nbDaysMax', data.nbDaysMin, data.nbDaysMax)
+                'nbDaysMin', 'nbDaysMax', req.query.nbDaysMin, req.query.nbDaysMax)
             )
             filters.push(FilterService.formatNumberRangeFilter<Offer>(
-                'retrocessionRate', data.retrocessionRateMin, data.retrocessionRateMax)
+                'retrocessionRate', req.query.retrocessionRateMin, req.query.retrocessionRateMax)
             )
             filters.push(FilterService.formatNumberRangeFilter<Offer>(
-                'averageTechnicalCareDay', data.averageTechnicalCareDayMin, data.averageTechnicalCareDayMax)
+                'averageTechnicalCareDay', req.query.averageTechnicalCareDayMin, req.query.averageTechnicalCareDayMax)
             )
             filters.push(FilterService.formatNumberRangeFilter<Offer>(
-                'averageKilometersDay', data.averageKilometersDayMin, data.averageKilometersDayMax)
+                'averageKilometersDay', req.query.averageKilometersDayMin, req.query.averageKilometersDayMax)
             )
             filters.push(FilterService.formatNumberRangeFilter<Offer>(
-                'averageConsultationsDay', data.averageConsultationsDayMin, data.averageConsultationsDayMax)
+                'averageConsultationsDay', req.query.averageConsultationsDayMin, req.query.averageConsultationsDayMax)
             )
-            const result = await getOffers(page, limit, filters)
+            const filterDepartments = FilterService.formatArrayContains<Offer, number>(
+                'authorizedDepartment', req.query.departments)
+            if (filterDepartments) {
+                filters.push({nurse: filterDepartments})
+            }
+            const result = await getOffers(req.query.page, req.query.limit, filters)
             res.json(result)
         } catch (err: any) {
             console.error(err)

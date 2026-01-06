@@ -6,15 +6,9 @@ export interface AuthRequest extends Request {
 }
 
 export interface PaginatedRequestParams {
-    page: string | number
-    limit: string | number
-}
-
-export interface PaginationValues {
     page: number
     limit: number
 }
-
 export interface PaginationResult<T> {
     data: T[]
     pagination: {
@@ -22,5 +16,5 @@ export interface PaginationResult<T> {
         totalPages: number
         hasNextPage: boolean
         hasPreviousPage: boolean
-    } & PaginationValues
+    } & PaginatedRequestParams
 }
